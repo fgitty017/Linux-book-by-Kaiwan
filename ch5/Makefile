@@ -24,6 +24,8 @@ ALL :=  membugs membugs_dbg membugs_dbg_asan membugs_dbg_ub membugs_dbg_msan
 
 CC=${CROSS_COMPILE}gcc
 CL=${CROSS_COMPILE}clang
+# select compiler (default to clang)
+CMPLR=${CL}
 
 CFLAGS=-O2 -Wall -UDEBUG
 CFLAGS_DBG=-g -ggdb -gdwarf-4 -O0 -Wall -Wextra -DDEBUG
@@ -39,44 +41,44 @@ all: ${ALL}
 CB_FILES := *.[ch]
 
 common.o: ../common.c ../common.h
-	${CC} ${CFLAGS} -c ../common.c -o common.o
+	${CMPLR} ${CFLAGS} -c ../common.c -o common.o
 common_dbg.o: ../common.c ../common.h
-	${CC} ${CFLAGS_DBG} -c ../common.c -o common_dbg.o
+	${CMPLR} ${CFLAGS_DBG} -c ../common.c -o common_dbg.o
 
  #--- Sanitizers (use clang): common_dbg_*
 common_dbg_asan.o: ../common.c ../common.h
-	${CL} ${CFLAGS_DBG_ASAN} -c ../common.c -o common_dbg_asan.o
+	${CMPLR} ${CFLAGS_DBG_ASAN} -c ../common.c -o common_dbg_asan.o
 common_dbg_ub.o: ../common.c ../common.h
-	${CL} ${CFLAGS_DBG_UB} -c ../common.c -o common_dbg_ub.o
+	${CMPLR} ${CFLAGS_DBG_UB} -c ../common.c -o common_dbg_ub.o
 common_dbg_msan.o: ../common.c ../common.h
-	${CL} ${CFLAGS_DBG_MSAN} -c ../common.c -o common_dbg_msan.o
+	${CMPLR} ${CFLAGS_DBG_MSAN} -c ../common.c -o common_dbg_msan.o
 
 #--- Target :: membugs
 membugs.o: membugs.c
-	${CC} ${CFLAGS} -c membugs.c -o membugs.o
+	${CMPLR} ${CFLAGS} -c membugs.c -o membugs.o
 membugs: common.o membugs.o
-	${CC} -o membugs membugs.o common.o ${LINKIN}
+	${CMPLR} -o membugs membugs.o common.o ${LINKIN}
 
 membugs_dbg.o: membugs.c
-	${CC} ${CFLAGS_DBG} -c membugs.c -o membugs_dbg.o
+	${CMPLR} ${CFLAGS_DBG} -c membugs.c -o membugs_dbg.o
 membugs_dbg: membugs_dbg.o common_dbg.o
-	${CC} -o membugs_dbg membugs_dbg.o common_dbg.o ${LINKIN}
+	${CMPLR} -o membugs_dbg membugs_dbg.o common_dbg.o ${LINKIN}
 
  #--- Sanitizers for membugs :: (use clang): <foo>_dbg_[asan|ub|msan]
 membugs_dbg_asan.o: membugs.c
-	${CL} ${CFLAGS_DBG_ASAN} -c membugs.c -o membugs_dbg_asan.o
+	${CMPLR} ${CFLAGS_DBG_ASAN} -c membugs.c -o membugs_dbg_asan.o
 membugs_dbg_asan: membugs_dbg_asan.o common_dbg_asan.o
-	${CL} ${CFLAGS_DBG_ASAN} -o membugs_dbg_asan membugs_dbg_asan.o common_dbg_asan.o ${LINKIN}
+	${CMPLR} ${CFLAGS_DBG_ASAN} -o membugs_dbg_asan membugs_dbg_asan.o common_dbg_asan.o ${LINKIN}
 
 membugs_dbg_ub.o: membugs.c
-	${CL} ${CFLAGS_DBG_UB} -c membugs.c -o membugs_dbg_ub.o
+	${CMPLR} ${CFLAGS_DBG_UB} -c membugs.c -o membugs_dbg_ub.o
 membugs_dbg_ub: membugs_dbg_ub.o common_dbg_ub.o
-	${CL} ${CFLAGS_DBG_UB} -o membugs_dbg_ub membugs_dbg_ub.o common_dbg_ub.o ${LINKIN}
+	${CMPLR} ${CFLAGS_DBG_UB} -o membugs_dbg_ub membugs_dbg_ub.o common_dbg_ub.o ${LINKIN}
 
 membugs_dbg_msan.o: membugs.c
-	${CL} ${CFLAGS_DBG_MSAN} -c membugs.c -o membugs_dbg_msan.o
+	${CMPLR} ${CFLAGS_DBG_MSAN} -c membugs.c -o membugs_dbg_msan.o
 membugs_dbg_msan: membugs_dbg_msan.o common_dbg_msan.o
-	${CL} ${CFLAGS_DBG_MSAN} -o membugs_dbg_msan membugs_dbg_msan.o common_dbg_msan.o ${LINKIN}
+	${CMPLR} ${CFLAGS_DBG_MSAN} -o membugs_dbg_msan membugs_dbg_msan.o common_dbg_msan.o ${LINKIN}
 
 
 # indent- "beautifies" C code into the "Linux kernel style".
